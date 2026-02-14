@@ -116,8 +116,6 @@ The deployment process uses an unattended install with the following key setting
 * **Deployment Status:** Installed Windows 11 unattended (only required entering the computer name).
 * **Domain Status:** Successfully auto-joined the domain.
 * **IP Leases Confirmed:** `GF-WINCLIENT01` leased `192.168.2.5`, `GF-WINCLIENT02` leased `192.168.2.4`.
-* **Both devices were showing in the `Computers` container and moved to OU `Devices`** 
-
 
 
 <img width="1102" height="622" alt="Screenshot 2026-02-14 145515" src="https://github.com/user-attachments/assets/6ba414d0-b623-45f4-bee7-5fef9596c39f" />
@@ -132,4 +130,33 @@ The deployment process uses an unattended install with the following key setting
 
 <img width="1335" height="852" alt="Screenshot 2026-02-14 151312" src="https://github.com/user-attachments/assets/7e48418f-50c9-49f9-a846-7112eb75343a" />
 
+
+### **6. Active Directory Structure (User Accounts)**
+
+* **Organizational Unit (OU) Created:** The **`GreenfieldAccountancyLtd`** OU was created directly under the domain root (`GreenfieldAccountancyLtd.com`). Within this Parent OU two Child OU's were then created `Users` and `Devices` and all devices were moved from the `Computers` Container to the newly created `Devices` Child OU. This dedicated OU ensures the structure is ready for precise Group Policy linking and simplified filtering for Microsoft Entra Connect synchronization.
+
+<img width="806" height="509" alt="Screenshot 2026-02-14 152447" src="https://github.com/user-attachments/assets/c9fe2dae-6be8-41a7-9dfe-45cedfe0a8fd" />
+
+
+* **Test Users Created:** Two test user accounts, **`Jane Smith`** and **`John Smith`**, were created and placed within the new **`Users`** OU.
+
+<img width="1619" height="1000" alt="Screenshot 2026-02-14 161034" src="https://github.com/user-attachments/assets/ca5448f4-c182-451a-b455-131d58c4aded" />
+
+
+### **7. Group Policy Management: Advanced User Desktop Policy** 🖼️
+
+The first GPO was implemented to enforce corporate desktop standards, display dynamic user context, and secure the desktop environment against user modifications.
+
+* **GPO Name:** `BGInfo`
+* **GPO Scope:** Linked to the **`Devices`** OU.
+* **Wallpaper Deployment:** Configured via a **User Logon Script** (`set_bg.bat`) running from **NETLOGON** to execute **BGInfo.exe** silently, displaying dynamic information (e.g., user name, IP address) on the desktop background.
+* **Desktop Restrictions:**
+    * **User Configuration** policies were applied to prevent changing the desktop background.
+    * Additional policies were set to **lock down desktop personalization** and prevent users from accessing system settings (e.g., Registry Editor, specific Control Panel applets).
+* **Verification:** Confirmed dynamic wallpaper applied and desktop personalization was fully restricted.
+
+
+<img width="1288" height="676" alt="Screenshot 2026-02-14 180104" src="https://github.com/user-attachments/assets/9831af06-a628-4856-9aa0-35fa868a4b54" />
+
+<img width="1531" height="876" alt="Screenshot 2026-02-14 175913" src="https://github.com/user-attachments/assets/168a07e3-762d-462d-bd8c-020fbeda7dda" />
 
