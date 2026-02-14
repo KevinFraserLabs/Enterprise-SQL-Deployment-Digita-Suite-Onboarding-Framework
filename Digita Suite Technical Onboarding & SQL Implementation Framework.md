@@ -160,3 +160,49 @@ The first GPO was implemented to enforce corporate desktop standards, display dy
 
 <img width="1531" height="876" alt="Screenshot 2026-02-14 175913" src="https://github.com/user-attachments/assets/168a07e3-762d-462d-bd8c-020fbeda7dda" />
 
+
+## **8. Cloud Identity Integration: Microsoft Entra Connect** ☁️
+
+The synchronization software was installed directly on the **Domain Controller** (`GF-DC01` - `192.168.2.2`) to facilitate the hybrid identity infrastructure, synchronizing the on-premises Active Directory with Microsoft Entra ID (formerly Azure AD).
+
+* **Installation Location:** Domain Controller (GF-DC01 - `192.168.2.2`)
+* **Software:** Installed the latest version of **Microsoft Entra Connect**.
+* **Synchronization Configuration:**
+    * **Authentication Method:** Configured for **Password Hash Synchronization (PHS)**.
+    * **Synchronization Scope:** Set to synchronize the entire `GreenfieldAccountancyLtd` forest, specifically including the **`Users`** OU for identity and the **`Devices`** OU for device objects.
+* **Verification:**
+    * Confirmed both **`John Smith `** and **`Jane Smith`** accounts appeared in the Microsoft Entra admin center with **"Windows Server AD"** as the source.
+
+<img width="283" height="366" alt="Screenshot 2026-02-14 201238" src="https://github.com/user-attachments/assets/fc8e7ace-a573-47b9-9e33-64b5a86d80ff" />
+
+<img width="1903" height="511" alt="Screenshot 2026-02-14 201258" src="https://github.com/user-attachments/assets/6540212e-74ef-4f34-94ad-7dfed26ff79d" />
+
+
+---
+
+### **9. Hybrid Entra ID Join and Group Writeback** 🤝
+
+The Entra Connect configuration was extended to enable **Hybrid Entra ID Join (HAADJ)** for devices and **Group Writeback** for cloud-created groups.
+
+* **Service Connection Point (SCP):** The Entra Connect wizard successfully configured the Service Connection Point (SCP) within the on-premises Active Directory.
+* **Group Writeback:** Confirmed the writeback feature was enabled and successfully synchronized groups created in Entra ID back to the on-premises Active Directory.
+* **Device Verification:**
+    * After an AD synchronization cycle and client restart, both **`GF-WINCLIENT1`** and **`GF-WINCLIENT2`** successfully registered their identity with Entra ID.
+    * Devices appeared in the Microsoft Entra admin center with a **Join Type** of **"Microsoft Entra Hybrid Joined"**.
+
+
+<img width="1898" height="404" alt="Screenshot 2026-02-14 210037" src="https://github.com/user-attachments/assets/22e81f29-67ce-411c-9d27-ef0f05483729" />
+
+
+### **10. Intune Enrollment Prerequisites and GPO Fixes** 🛡️
+
+Settings were configured in the cloud to allow enrollment.
+
+* **MDM User Scope:** Configured in the Microsoft Entra admin center under **Mobility (MDM and MAM)** to set the **MDM User Scope** to **"All"**, ensuring all licensed users can auto-enroll.
+* **Licensing:** An **Enterprise Mobility + Security E5** license was assigned to **`Jane Smith`** (and **`John Smith`** for testing) to meet the Intune management requirement.
+* **GPO Timing Fix (Critical):** The **`Always wait for the network at computer startup and logon`** GPO was **Enabled** within the **Default Domain Policy** to prevent GPO failure due to network initialization timing issues.
+
+<img width="1887" height="858" alt="Screenshot 2026-02-14 210341" src="https://github.com/user-attachments/assets/f9031396-852f-40cf-9820-06d032f5430b" />
+
+<img width="1323" height="723" alt="Screenshot 2026-02-14 210551" src="https://github.com/user-attachments/assets/94a0ddfe-a1fd-4255-b047-0f531ff86f1a" />
+
