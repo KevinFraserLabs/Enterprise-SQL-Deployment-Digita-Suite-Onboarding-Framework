@@ -272,13 +272,14 @@ Once the operating system installation was completed, GF-SQL01 was assigned its 
 
 <img width="1131" height="224" alt="Screenshot 2026-02-15 094402" src="https://github.com/user-attachments/assets/8358c8e9-ade1-4c00-bbb8-22cdf7d02884" />
 
------
+---
 
 ### 14. SQL Server 2022 Installation on GF‑SQL01 🗄️⚙️
+
 With GF‑SQL01 fully joined to the domain and network addressing finalized, the next step was to deploy SQL Server 2022. This server will host the backend database required for the Greenfield Accountancy application stack, so the installation was performed using a clean, minimal, and production‑aligned configuration.
 
 **Launching SQL Server Installation Center:**
-I began by launching the SQL Server 2022 Installation Center and selecting New SQL Server stand‑alone installation.
+I began by launching the SQL Server 2022 Installation Center and selecting **New SQL Server stand‑alone installation**.
 This opened the SQL setup workflow and initiated the standard rule checks.
 
 **Edition Selection:**
@@ -289,10 +290,10 @@ This edition includes the full SQL feature set and is appropriate for non‑prod
 Only the required components were installed to keep the SQL footprint clean and aligned with real‑world onboarding practices:
 - Database Engine Services
 - SQL Server Browser (installed automatically)
-No additional services such as Analysis Services, Integration Services, or PolyBase were required for this deployment.
+- No additional services such as Analysis Services, Integration Services, or PolyBase were required for this deployment.
 
 **Instance Configuration:**
-GF‑SQL01 hosts a single SQL instance, so I deployed SQL Server as a Default Instance (MSSQLSERVER).
+GF‑SQL01 hosts a single SQL instance, so I deployed SQL Server as a **Default Instance (MSSQLSERVER)**.
 This simplifies management and avoids unnecessary complexity in connection strings.
 
 **Server Configuration:**
@@ -301,16 +302,18 @@ All SQL services were left on their recommended default service accounts, follow
 - SQL Server Agent → NT Service\SQLSERVERAGENT
 - SQL Server Browser → NT AUTHORITY\LOCAL SERVICE
 I also enabled:
-- Grant Perform Volume Maintenance Tasks privilege
+- **Grant Perform Volume Maintenance Tasks privilege**
 This enables Instant File Initialization (IFI), improving performance during database creation, growth, and restores.
 
 **Database Engine Configuration:**
 The Database Engine was configured using a secure and flexible authentication model:
-Authentication Mode
+Authentication Mode:
 - Mixed Mode (Windows + SQL authentication)
 SA Account
+
 - A strong SA password was set for administrative fallback.
 SQL Administrators
+
 - My domain admin account was added as a SQL administrator.
 This ensures full access via Windows Authentication and aligns with enterprise onboarding workflows.
 
@@ -321,13 +324,18 @@ The summary screen confirmed a clean deployment with no warnings or failed compo
 
 <img width="812" height="711" alt="Screenshot 2026-02-15 101507" src="https://github.com/user-attachments/assets/ace5d14f-6eb3-4ab7-98b7-6ec4d554ae28" />
 
+---
+
 
 ### 15. Installing SQL Server Management Studio (SSMS) 🖥️📊
+
 SQL Server Management Studio (SSMS) was installed using the Visual Studio Installer, which now distributes SSMS 22. This ensures the latest version is deployed with full SQL 2022 compatibility.
 
 <img width="1287" height="716" alt="Screenshot 2026-02-15 102115" src="https://github.com/user-attachments/assets/5950acc1-7acb-4426-bffd-7f0f40a7c9f3" />
 
 Once installed, SSMS was launched to perform the initial connection to the SQL instance.
+
+---
 
 ### 16. First Connection to SQL Server 🔐
 When connecting to GF‑SQL01 for the first time, SQL Server enforced encrypted connections by default.
@@ -335,11 +343,15 @@ Because the server uses a self‑signed certificate, SSMS required:
 - Trust server certificate → enabled
 This behaviour is expected in internal lab environments.
 
-<img width="1287" height="716" alt="Screenshot 2026-02-15 102115" src="https://github.com/user-attachments/assets/c64f0299-de5e-41a6-b4ba-95d53a1b42d5" />
+<img width="485" height="587" alt="Screenshot 2026-02-15 102454" src="https://github.com/user-attachments/assets/cdc1138c-e51c-4e43-9efd-d68456888949" />
+
 
 After enabling certificate trust and signing in using my domain admin account, the connection succeeded.
 
+---
+
 ### 17. Successful SQL Server Connection 🎉
+
 Once authenticated, the SQL instance appeared in Object Explorer, confirming:
 - SQL Server 2022 is running
 - The instance is reachable
@@ -350,4 +362,228 @@ Once authenticated, the SQL instance appeared in Object Explorer, confirming:
 
 This completes the SQL Server installation and initial configuration phase. GF‑SQL01 is now fully prepared to host the Greenfield Accountancy application database.
 
+---
+
+### 18. Preparing the Greenfield Application Database 🧱
+
+With SQL Server installed, configured, and successfully connected via SSMS, the next step was to prepare the backend database that will support the Greenfield Accountancy application.
+
+**Note on SQL Server Learning Approach:**
+
+SQL Server is not an area I’ve previously worked with in depth, so I approached this part of the project as a structured learning exercise. To ensure the database was designed and configured correctly, I followed a combination of technical guides and reliable resources. This helped me validate each step, understand the workflow, and align the implementation with real‑world onboarding practices.
+Using guided resources in this way reflects how modern engineers work: combining foundational knowledge with well‑established references to accelerate learning, reduce errors, and deliver accurate, production‑aligned outcomes.
+
+
+**Creating the GreenfieldDB Database:**
+
+With SSMS connected to GF‑SQL01, the first task was to create a dedicated database for the application:
+- Database Name: GreenfieldDB
+- Purpose: Store customer records, invoices, payments, and application‑level user data
+- Location: Hosted on GF‑SQL01 under the default SQL Server instance
+A new query window was opened, and the database was created using:
+
+```
+CREATE DATABASE GreenfieldDB;
+GO
+```
+
+Once executed, the database appeared under Databases in Object Explorer, confirming successful creation.
+
+
+
+**Creating the Application Schema:**
+
+To keep the database organised and to separate application objects from system objects, an app schema was created:
+
+```
+USE GreenfieldDB;
+GO
+CREATE SCHEMA app;
+GO
+```
+
+This schema will contain all tables related to the Greenfield Accountancy application.
+
+
+
+**Creating SQL Logins for Departmental Users:**
+
+Two fictional users — John Smith and Jane Smith — were created to represent staff within a department that requires direct SQL access for reporting and analysis.
+Logins were created at the server level:
+
+```
+CREATE LOGIN JohnSmith WITH PASSWORD = 'P@ssw0rd123!';
+CREATE LOGIN JaneSmith WITH PASSWORD = 'P@ssw0rd123!';
+GO
+```
+
+These logins were then mapped to database users within ```GreenfieldDB```:
+
+```
+USE GreenfieldDB;
+GO
+CREATE USER JohnSmith FOR LOGIN JohnSmith;
+CREATE USER JaneSmith FOR LOGIN JaneSmith;
+GO
+```
+
+
+**Assigning Read‑Only Access:**
+
+To follow least‑privilege principles, both users were granted read‑only access via the built‑in ```db_datareader``` role:
+
+```
+ALTER ROLE db_datareader ADD MEMBER JohnSmith;
+ALTER ROLE db_datareader ADD MEMBER JaneSmith;
+GO
+```
+
+This allows them to query data without modifying it — a common requirement for reporting teams.
+
+
+
+***Creating the Application Tables:***
+
+With the schema and users in place, the next step was to build the core tables required by the Greenfield Accountancy application. These were created inside the ```app`` schema.
+
+
+
+
+**Customers Table:**
+
+```
+CREATE TABLE app.Customers (
+    CustomerID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(100) NOT NULL,
+    LastName NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(255) UNIQUE,
+    Phone NVARCHAR(50),
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME()
+);
+GO
+```
+
+**Invoices Table:**
+
+```
+CREATE TABLE app.Invoices (
+    InvoiceID INT IDENTITY(1,1) PRIMARY KEY,
+    CustomerID INT NOT NULL,
+    InvoiceDate DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE),
+    DueDate DATE NOT NULL,
+    Amount DECIMAL(10,2) NOT NULL,
+    Status NVARCHAR(50) NOT NULL DEFAULT 'Pending',
+    CONSTRAINT FK_Invoices_Customers
+        FOREIGN KEY (CustomerID) REFERENCES app.Customers(CustomerID)
+);
+GO
+```
+
+**Payments Table:**
+
+```
+CREATE TABLE app.Payments (
+    PaymentID INT IDENTITY(1,1) PRIMARY KEY,
+    InvoiceID INT NOT NULL,
+    PaymentDate DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE),
+    Amount DECIMAL(10,2) NOT NULL,
+    CONSTRAINT FK_Payments_Invoices
+        FOREIGN KEY (InvoiceID) REFERENCES app.Invoices(InvoiceID)
+);
+GO
+```
+
+**Application Users Table:**
+
+
+```
+CREATE TABLE app.Users (
+    UserID INT IDENTITY(1,1) PRIMARY KEY,
+    Username NVARCHAR(100) NOT NULL UNIQUE,
+    DisplayName NVARCHAR(200) NOT NULL,
+    Role NVARCHAR(50) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME()
+);
+GO
+```
+
+
+**Populating the Database with Sample Data:**
+
+To make the environment realistic and suitable for testing, sample data was inserted into each table.
+
+
+**Customers:**
+
+```
+INSERT INTO app.Customers (FirstName, LastName, Email, Phone)
+VALUES
+('Michael', 'Anderson', 'michael.anderson@example.com', '555-1010'),
+('Sarah', 'Thompson', 'sarah.thompson@example.com', '555-2020'),
+('David', 'Reed', 'david.reed@example.com', '555-3030'),
+('Emily', 'Clark', 'emily.clark@example.com', '555-4040');
+GO
+```
+
+
+**Invoices:**
+
+
+```
+INSERT INTO app.Invoices (CustomerID, InvoiceDate, DueDate, Amount, Status)
+VALUES
+(1, '2026-01-10', '2026-02-10', 450.00, 'Pending'),
+(1, '2026-01-15', '2026-02-15', 1200.00, 'Paid'),
+(2, '2026-01-20', '2026-02-20', 300.00, 'Pending'),
+(3, '2026-01-25', '2026-02-25', 750.00, 'Pending');
+GO
+```
+
+
+**Payments:**
+
+
+```
+INSERT INTO app.Payments (InvoiceID, PaymentDate, Amount)
+VALUES
+(2, '2026-01-18', 1200.00),
+(1, '2026-01-12', 200.00),
+(1, '2026-01-20', 250.00);
+GO
+```
+
+
+**Application Users:**
+
+
+```
+INSERT INTO app.Users (Username, DisplayName, Role)
+VALUES
+('admin', 'System Administrator', 'Administrator'),
+('jdoe', 'John Doe', 'Staff'),
+('asmith', 'Alice Smith', 'Manager');
+GO
+```
+
+
+**Verifying the Database Structure:**
+
+To confirm all tables were created successfully:
+
+```
+SELECT TABLE_SCHEMA, TABLE_NAME
+FROM GreenfieldDB.INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = 'app';
+```
+
+All four tables appeared as expected:
+
+- Customers
+- Invoices
+- Payments
+- Users
+
+This completes the database build phase.
+
+<img width="1872" height="854" alt="Screenshot 2026-02-15 114514" src="https://github.com/user-attachments/assets/7b1ffdd7-a390-4ca2-921c-72949512f0d9" />
 
