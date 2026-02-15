@@ -1,11 +1,11 @@
-## 🚀 Enterprise SQL Deployment & Digita Suite Onboarding Framework With Hybrid Environment Setup 🚀
+## 🚀 Enterprise SQL Deployment & Application Onboarding Framework for Hybrid Environments 🚀
 
 
 ## 🧩 Virtual Machine (VM) and Network Setup
 
-To simulate the customer’s IT environment for the PracticeSuite Pro deployment, I built a dedicated virtual lab using Hyper‑V on my host PC. This provides a controlled setup where I can test the full installation and configuration process end‑to‑end. 
+o simulate a customer’s IT environment for an enterprise application deployment, I built a dedicated virtual lab using Hyper‑V on my host PC. This provided a controlled hybrid environment where I could test the full SQL Server installation, configuration, and client‑side onboarding workflow end‑to‑end.
 
-A fictional organisation, GreenfieldAccountancyLtd, was created to represent a typical accountancy firm. Two standard user accounts (John Smith and Jane Smith) were added to simulate real staff identities throughout the onboarding process.
+A fictional organisation, GreenfieldAccountancyLtd, was created to represent a typical mid‑sized accountancy firm. Two standard user accounts — John Smith and Jane Smith — were added to simulate real staff identities and to model how departmental users would interact with the system during an onboarding engagement.
 
 
 ---
@@ -444,7 +444,7 @@ This allows them to query data without modifying it — a common requirement for
 
 ***Creating the Application Tables:***
 
-With the schema and users in place, the next step was to build the core tables required by the Greenfield Accountancy application. These were created inside the ```app`` schema.
+With the schema and users in place, the next step was to build the core tables required by the Greenfield Accountancy application. These were created inside the ``app`` schema.
 
 
 
