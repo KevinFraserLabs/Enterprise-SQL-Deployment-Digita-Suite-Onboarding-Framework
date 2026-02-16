@@ -3,7 +3,7 @@
 
 ## 🧩 Virtual Machine (VM) and Network Setup
 
-o simulate a customer’s IT environment for an enterprise application deployment, I built a dedicated virtual lab using Hyper‑V on my host PC. This provided a controlled hybrid environment where I could test the full SQL Server installation, configuration, and client‑side onboarding workflow end‑to‑end.
+To simulate a customer’s IT environment for an enterprise application deployment, I built a dedicated virtual lab using Hyper‑V on my host PC. This provided a controlled hybrid environment where I could test the full SQL Server installation, configuration, and client‑side onboarding workflow end‑to‑end.
 
 A fictional organisation, GreenfieldAccountancyLtd, was created to represent a typical mid‑sized accountancy firm. Two standard user accounts — John Smith and Jane Smith — were added to simulate real staff identities and to model how departmental users would interact with the system during an onboarding engagement.
 
