@@ -640,7 +640,7 @@ A clean folder structure was created to keep Intune and ConfigMgr application pa
 
 <img width="1128" height="441" alt="Screenshot 2026-02-15 150152" src="https://github.com/user-attachments/assets/c08971c0-f8c9-4fdf-bbf3-5f4a461f83cd" />
 
-The SSMS installer () was placed in the Intune Apps > Source folder.
+The SSMS installer `SSMS-Setup-ENU.exe` was placed in the Intune Apps > Source folder.
 
 ```
 B:\Intune Apps\
@@ -656,9 +656,9 @@ B:\Intune Apps\
 To deploy SSMS via Intune, the installer must be converted into a package.
 
 Using the Microsoft Win32 Content Prep Tool:
-• 	Source folder: 
-• 	Setup file: 
-• 	Output folder: 
+• 	Source folder: - `B:\Intune Apps\SSMS\Source`
+• 	Setup file: `SSMS-Setup-ENU.exe`
+• 	Output folder: `B:\Intune Apps\SSMS\Output`
 Once the tool completed, the output folder contained:
 
 <img width="1447" height="658" alt="Screenshot 2026-02-17 164931" src="https://github.com/user-attachments/assets/96244b69-e83c-49e7-829c-0a25a0226198" />
