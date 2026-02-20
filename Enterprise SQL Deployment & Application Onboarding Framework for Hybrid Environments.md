@@ -817,7 +817,7 @@ The following configuration was applied:
 - Site Name: Greenfield
 - SQL Server: GF‑SQL01
 - Database: CM_GAL
-- Install Directory: B:\SCCM 
+- Install Directory: E:\SCCM 
 - Management Point: GF‑DEPLOY01
 - Distribution Point: GF‑DEPLOY01
 
@@ -829,36 +829,39 @@ The following configuration was applied:
 
 After installation, the following checks were performed to confirm the GAL site is healthy and operational.
 
-Site Configuration
-
-
-📸 Add screenshot here:
-
+**Site Configuration**
 
 ConfigMgr Console → Administration → Site Configuration → Sites
 (Showing Site Code GAL, Site Name Greenfield, Server GF‑DEPLOY01)
-Site Status
+
+<img width="1498" height="541" alt="Screenshot 2026-02-19 144449" src="https://github.com/user-attachments/assets/0215a856-5157-4eb9-9498-8466d841381b" />
 
 
-📸 Add screenshot here:
 
+**Site Status**
 
 Monitoring → System Status → Site Status
-Management Point Health
 
 
-📸 Add screenshot here:
+<img width="1331" height="515" alt="Screenshot 2026-02-20 202620" src="https://github.com/user-attachments/assets/ab1430d5-2f0a-4a55-9c78-2154c93cf85d" />
 
+
+**Management Point Health**
 
 Monitoring → Component Status → SMS_MP_CONTROL_MANAGER = OK
-Distribution Point Health
 
 
-📸 Add screenshot here:
+<img width="1796" height="782" alt="Screenshot 2026-02-20 203241" src="https://github.com/user-attachments/assets/edacc5d7-cbd5-43b3-a67b-9d076719f5b2" />
 
+
+
+**Distribution Point Health**
 
 Monitoring → Distribution Point Configuration Status → Success
 These checks confirm the core site roles are functioning correctly.
+
+
+<img width="1388" height="345" alt="Screenshot 2026-02-20 203541" src="https://github.com/user-attachments/assets/c3ad34c5-4fb0-4920-864d-1d492bd64439" />
 
 
 **Distribution Point & Content Library:**
@@ -875,7 +878,15 @@ The following folders were created:
 - The ConfigMgr installation directory
 
 
-📸 Add screenshot here: B:\ root showing all ConfigMgr system folders
+E: Install
+B: Distrubution and Content Library
+
+
+<img width="884" height="498" alt="Screenshot 2026-02-20 203746" src="https://github.com/user-attachments/assets/e438be5c-8783-439b-bfe4-2a953eb50597" />
+
+
+<img width="899" height="417" alt="Screenshot 2026-02-20 203735" src="https://github.com/user-attachments/assets/acd5f8cd-3e95-4864-814a-efac3a6d42be" />
+
 
 
 **Boundaries & Boundary Groups:**
@@ -883,38 +894,29 @@ The following folders were created:
 A boundary was created to define the Greenfield network space, and a Boundary Group was configured to assign clients to the GAL site and provide content location services.
 
 
-📸 Add screenshot here: Administration → Boundaries
+**Application Deployment Validation (Software Center Test)**
+
+After confirming that the Management Point, Distribution Point, boundaries, and client assignment were all healthy, a test application deployment was performed to validate end‑to‑end functionality.
+Software Center was installed on GF‑WINCLIENT1 and GF‑WINCLIENT2, and VLC Media Player was deployed using the official MSI installer.
+
+The application appeared in Software Center on both clients and installed successfully.
+
+This confirmed that:
+- the Distribution Point is distributing content correctly
+- the Management Point is communicating with clients
+- boundaries and boundary groups are configured properly
+- clients are assigned to Site Code GAL
+- MSI‑based application deployment is fully operational
+
+This validated that the ConfigMgr environment is functioning as intended.
 
 
-📸 Add screenshot here: Boundary Group showing Assigned Site = GAL and Site System = GF‑DEPLOY01
+<img width="1426" height="702" alt="Screenshot 2026-02-20 204337" src="https://github.com/user-attachments/assets/cdb4b088-7704-4f50-ae70-e6a19292bb38" />
 
 
-**Client Deployment via Group Policy (GPO):**
-
-To ensure all domain‑joined devices receive the ConfigMgr client, a Startup Script GPO was created.
+<img width="1422" height="738" alt="Screenshot 2026-02-20 204357" src="https://github.com/user-attachments/assets/5d9f4587-5253-4e8c-80d7-61a7f053f43f" />
 
 
-📸 Add screenshot here: GPO Editor → Startup Scripts → ccmsetup
 
 
-📸 Add screenshot here: GPO linked to Devices OU
 
-
-📸 Add screenshot here: ConfigMgr Console → Devices (Client = Yes, Site Code = GAL)
-
-
-This confirms the client deployment mechanism is working.
-
-
-**Summary:**
-
-This section documented the installation and configuration of Microsoft Endpoint Configuration Manager within the Greenfield environment.
-The following was achieved:
-- GF‑DEPLOY01 prepared with required roles
-- SQL Server configured correctly
-- AD schema extended and delegated
-- GAL Primary Site installed
-- Management Point and Distribution Point operational
-- Boundaries and Boundary Groups configured
-- Client deployment mechanism in place
-The environment is now ready for application deployment, software updates, compliance baselines, and operating system deployment (OSD).
