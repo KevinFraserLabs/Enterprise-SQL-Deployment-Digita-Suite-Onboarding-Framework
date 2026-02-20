@@ -1218,7 +1218,7 @@ This project demonstrates hands‑on capability across a wide range of enterpris
 - Enterprise documentation and workflow design
 
 
-**Project Outcome: 🎉🎉🎉🎉 **
+**Project Outcome: 🎉🎉🎉🎉**
 
 The Greenfield Accountancy environment now represents a fully functional, production‑aligned hybrid infrastructure capable of:
 
