@@ -354,6 +354,27 @@ The summary screen confirmed a clean deployment with no warnings or failed compo
 
 <img width="812" height="711" alt="Screenshot 2026-02-15 101507" src="https://github.com/user-attachments/assets/ace5d14f-6eb3-4ab7-98b7-6ec4d554ae28" />
 
+**SQL Server Firewall Configuration (GF‑SQL01): 🔒🛡️**
+
+With SQL Server 2022 successfully deployed, the next step was to ensure the server was accessible to domain‑joined clients and management tools in a secure and controlled manner.
+In a production environment, SQL Server does not function correctly unless the appropriate inbound firewall rules are configured, as the Windows Firewall blocks SQL traffic by default.
+To align GF‑SQL01 with real‑world enterprise practices, the following inbound rules were added using Windows Defender Firewall with Advanced Security:
+Required SQL Ports:
+
+1433 - TCP 
+1434 - UDP 
+
+
+These rules allow applications, administrative tools (such as SSMS), and future onboarding workloads to connect to the SQL instance securely.
+
+
+<img width="1546" height="376" alt="Screenshot 2026-02-20 210259" src="https://github.com/user-attachments/assets/a162ce91-3be3-4157-ad30-b202a89336f8" />
+
+
+<img width="851" height="299" alt="Screenshot 2026-02-20 210403" src="https://github.com/user-attachments/assets/94bc0fe7-c340-4a0a-818b-4bb7671f67a7" />
+
+This configuration ensures that SQL Server remains secure while still being fully accessible to authorised systems within the Greenfield Accountancy hybrid environment.
+
 
 
 ### 15. Installing SQL Server Management Studio (SSMS): 🖥️📊
@@ -769,6 +790,36 @@ Before running the ConfigMgr installer, GF‑DEPLOY01 was prepared with all requ
 These include IIS, BITS, .NET Framework, and other components required for the Management Point and Distribution Point roles.
 
 
+**ConfigMgr Firewall Configuration (GF‑DEPLOY01): 🔒🛡️**
+
+Before launching the ConfigMgr setup wizard, the Windows Firewall on GF‑DEPLOY01 was configured to allow inbound communication required by the Management Point (MP) and Distribution Point (DP) roles.
+By default, Windows Server blocks these ports, which would prevent clients from communicating with the site.
+To align with real‑world enterprise deployments, the following inbound rules were added using Windows Defender Firewall with Advanced Security:
+
+Required ConfigMgr Ports:
+
+80 - TCP
+443 - TCP
+
+These rules ensure that:
+
+- clients can communicate with the Management Point
+- Software Center can retrieve policy and application metadata
+- the Distribution Point can serve content
+- boundary groups function correctly
+- client assignment to Site Code GAL succeeds
+
+
+<img width="1522" height="389" alt="Screenshot 2026-02-20 210627" src="https://github.com/user-attachments/assets/ed36c06d-a8db-4846-82fe-1a646eef38b7" />
+
+
+<img width="712" height="423" alt="Screenshot 2026-02-20 210747" src="https://github.com/user-attachments/assets/d9100812-33f2-473a-a958-700497c5fb7d" />
+
+
+With the firewall configured, GF‑DEPLOY01 was fully prepared for the ConfigMgr installation.
+
+
+
 **SQL Server Configuration (GF‑SQL01):**
 
 ConfigMgr relies heavily on SQL Server, so GF‑SQL01 was configured to meet all requirements.
@@ -787,8 +838,8 @@ The following settings were applied:
 <img width="705" height="521" alt="Screenshot 2026-02-19 143152" src="https://github.com/user-attachments/assets/078a9acb-f3f1-4de5-88da-ac356357a466" />
 
 
-
 These settings ensure SQL is fully compatible with ConfigMgr.
+
 
 
 **Active Directory Integration:**
@@ -894,7 +945,7 @@ B: Distrubution and Content Library
 A boundary was created to define the Greenfield network space, and a Boundary Group was configured to assign clients to the GAL site and provide content location services.
 
 
-**Application Deployment Validation (Software Center Test)**
+**Application Deployment Validation (Software Center Test):**
 
 After confirming that the Management Point, Distribution Point, boundaries, and client assignment were all healthy, a test application deployment was performed to validate end‑to‑end functionality.
 Software Center was installed on GF‑WINCLIENT1 and GF‑WINCLIENT2, and VLC Media Player was deployed using the official MSI installer.
@@ -918,5 +969,128 @@ This validated that the ConfigMgr environment is functioning as intended.
 
 
 
+###21. Deploying and Validating the Greenfield SQL Connectivity Test Application: 🧪💻
+
+
+With SQL Server fully deployed and the GreenfieldDB schema in place, the next step was to validate that a domain‑joined client could authenticate to the database using Windows Integrated Authentication.
+To achieve this, I created a lightweight .NET console application designed specifically for connectivity testing within the Greenfield Accountancy environment.
+
+
+
+**Creating the Application:**
+
+I developed a small .NET 10 console application named Greenfield Dummy App.
+
+The purpose of this application is intentionally narrow and controlled: it executes a single predefined SQL query against the app.Customers table to confirm that:
+- The client can reach GF‑SQL01
+- Windows authentication is functioning
+- The logged‑in domain user has the correct SQL permissions
+- The database and schema are accessible
+- The .NET runtime is installed and working on the client
+
+The application is not interactive and does not accept custom SQL input.
+This design ensures predictable, repeatable validation aligned with real‑world onboarding workflows.
+
+
+<img width="1215" height="734" alt="Screenshot 2026-02-20 213917" src="https://github.com/user-attachments/assets/28337d93-e41e-4e61-a428-d0146b1d50fa" />
+
+
+<img width="1494" height="769" alt="Screenshot 2026-02-20 214117" src="https://github.com/user-attachments/assets/e93112bd-68cf-4aaf-b2e4-7ef560280045" />
+
+
+<img width="1298" height="490" alt="Screenshot 2026-02-20 214215" src="https://github.com/user-attachments/assets/a54b1d96-efbb-4fde-9b96-26c24e7e9371" />
+
+
+<img width="1150" height="613" alt="Screenshot 2026-02-20 214322" src="https://github.com/user-attachments/assets/90d5770b-ecad-4cd3-8a87-925addcf14df" />
+
+
+Once compiled, the application produced the following output files:
+- GreenfieldApp.exe
+- GreenfieldApp.dll
+- GreenfieldApp.runtimeconfig.json
+- GreenfieldApp.deps.json
+
+These were published into a dedicated application source folder for deployment.
+
+<img width="1603" height="606" alt="Screenshot 2026-02-20 223447" src="https://github.com/user-attachments/assets/c37b3768-d9ed-44bc-ba3d-4fc659dd176a" />
+
+
+
+**Packaging and Deployment via ConfigMgr:**
+
+To mirror enterprise deployment practices, the application was packaged and deployed using Microsoft Endpoint Configuration Manager.
+
+Deployment steps included:
+- Creating a new Application in ConfigMgr
+- Adding a Deployment Type pointing to the published source folder
+- Configuring the install command to copy the application into:
+C:\Program Files\GreenfieldApp
+- Creating a file‑based detection rule targeting GreenfieldApp.exe
+- Distributing the content to the Distribution Point
+- Deploying the application to the test device collection containing GF‑WINCLIENT01
+
+Because the application targets .NET 10, the .NET Desktop Runtime 10 was also installed on the client to ensure compatibility.
+Once deployed, the application appeared in Software Center and installed successfully.
+
+
+<img width="1412" height="396" alt="Screenshot 2026-02-20 215146" src="https://github.com/user-attachments/assets/565a3243-5c3c-41e0-8ca9-cc7c03e57dbc" />
+
+
+<img width="1395" height="682" alt="Screenshot 2026-02-20 215258" src="https://github.com/user-attachments/assets/5f03d77b-4276-4e34-a8fe-2c91b902b1fe" />
+
+
+<img width="1721" height="771" alt="Screenshot 2026-02-20 215407" src="https://github.com/user-attachments/assets/50245ef9-8005-49d4-a62f-ba9a57a447b6" />
+
+
+
+
+**Configuring SQL Permissions: 🔐**
+
+
+Since the application uses Integrated Security, SQL Server authenticates the currently logged‑in Windows user.
+For this test, the user logged into GF‑WINCLIENT01 was:
+GREENFIELDACCOU\JaneSmith
+
+
+To allow the application to run its predefined query, I added this user as a Windows login in SQL Server and mapped it to the GreenfieldDB database with the following role:
+- db_datareader
+This provides read‑only access to the app.Customers table, which is sufficient for connectivity validation.
+
+
+<img width="1483" height="754" alt="Screenshot 2026-02-20 223706" src="https://github.com/user-attachments/assets/6167eac5-469c-45c2-b6b0-0ed4e600523f" />
+
+
+
+**Running the Application on GF‑WINCLIENT01:**
+
+
+With deployment and permissions complete, I launched the application from:
+C:\Program Files\GreenfieldApp\GreenfieldApp.exe
+
+
+The application successfully:
+- Connected to GF‑SQL01
+- Authenticated using the logged‑in Windows identity
+- Executed the predefined SELECT query
+- Returned the expected dummy customer records seeded during database creation
+This confirmed that SQL connectivity, authentication, permissions, and application deployment were all functioning correctly.
+
+
+<img width="1837" height="672" alt="Screenshot 2026-02-20 222434" src="https://github.com/user-attachments/assets/410dc7d4-526e-4a6b-963e-183e57f06ba7" />
+
+
+
+**Outcome: 🎉**
+
+The Greenfield Dummy App performed exactly as intended.
+By returning the predefined dataset, it validated:
+- Network reachability
+- SQL Server availability
+- Correct domain authentication
+- Proper SQL permissions
+- Successful ConfigMgr deployment
+- Correct .NET runtime configuration
+
+This completes the SQL connectivity validation phase and confirms that the Greenfield Accountancy environment is fully integrated end‑to‑end.
 
 
